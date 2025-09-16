@@ -20,6 +20,7 @@ interface CategoryBudgetStatus {
   spentAmount: number
   remainingAmount: number
   percentage: number
+  displayPercentage: number
   status: 'good' | 'warning' | 'danger'
 }
 
