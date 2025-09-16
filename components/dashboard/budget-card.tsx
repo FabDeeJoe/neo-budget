@@ -14,18 +14,21 @@ interface BudgetCardProps {
 export function BudgetCard({ budget, spent, percentage }: BudgetCardProps) {
   const remaining = Math.max(budget.amount - spent, 0)
   const isOverBudget = spent > budget.amount
+  const realPercentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0 // Pourcentage réel (peut dépasser 100%)
   
   const getProgressBarColor = () => {
-    if (percentage >= 100) return 'bg-red-500'
-    if (percentage >= 90) return 'bg-red-400'
-    if (percentage >= 70) return 'bg-orange-500'
+    if (realPercentage > 100) return 'bg-gradient-to-r from-red-500 to-pink-600 animate-pulse'
+    if (realPercentage === 100) return 'bg-red-500'
+    if (realPercentage >= 90) return 'bg-red-400'
+    if (realPercentage >= 70) return 'bg-orange-500'
     return 'bg-green-500'
   }
-  
+
   const getCardBorderColor = () => {
-    if (percentage >= 100) return 'border-red-200 dark:border-red-800'
-    if (percentage >= 90) return 'border-red-100 dark:border-red-900'
-    if (percentage >= 70) return 'border-orange-200 dark:border-orange-800'
+    if (realPercentage > 100) return 'border-2 border-pink-400 dark:border-pink-500 shadow-lg shadow-pink-200 dark:shadow-pink-900/50'
+    if (realPercentage === 100) return 'border-2 border-red-400 dark:border-red-500'
+    if (realPercentage >= 90) return 'border-red-100 dark:border-red-900'
+    if (realPercentage >= 70) return 'border-orange-200 dark:border-orange-800'
     return 'border-gray-200 dark:border-gray-700'
   }
   
@@ -58,13 +61,15 @@ export function BudgetCard({ budget, spent, percentage }: BudgetCardProps) {
           
           {/* Percentage */}
           <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-            percentage >= 100 
-              ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-              : percentage >= 70
+            realPercentage > 100
+              ? 'bg-gradient-to-r from-pink-100 to-red-100 dark:from-pink-900/50 dark:to-red-900/50 text-pink-800 dark:text-pink-300 animate-pulse border border-pink-300 dark:border-pink-600'
+              : realPercentage === 100
+              ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-600'
+              : realPercentage >= 70
               ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
               : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
           }`}>
-            {Math.round(percentage)}%
+            {Math.round(realPercentage)}%
           </span>
         </div>
       </CardHeader>
@@ -119,9 +124,11 @@ export function BudgetCard({ budget, spent, percentage }: BudgetCardProps) {
         {/* Status Message */}
         {isOverBudget && (
           <div className="pt-2">
-            <p className="text-xs text-red-600 dark:text-red-400 font-medium">
-              ⚠️ Budget dépassé
-            </p>
+            <div className="bg-gradient-to-r from-pink-50 to-red-50 dark:from-pink-900/20 dark:to-red-900/20 border border-pink-200 dark:border-pink-800 rounded-lg px-2 py-1 animate-pulse">
+              <p className="text-xs text-pink-700 dark:text-pink-300 font-bold text-center">
+                🚨 BUDGET DÉPASSÉ
+              </p>
+            </div>
           </div>
         )}
         

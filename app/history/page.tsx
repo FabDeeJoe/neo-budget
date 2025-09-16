@@ -7,14 +7,19 @@ import { formatCurrency } from '@/lib/currency'
 import { getCurrentMonth } from '@/lib/date'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { SuccessToast } from '@/components/ui/success-toast'
+import { EditExpenseModal } from '@/components/expense/edit-expense-modal'
 import { ArrowLeft, Calendar, Filter, Trash2, Edit } from 'lucide-react'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import Link from 'next/link'
 
 export default function HistoryPage() {
   const { user } = useAuth()
-  const { expenses, loading, getExpensesByMonth } = useExpensesContext()
+  const { expenses, loading, getExpensesByMonth, updateExpense, deleteExpense } = useExpensesContext()
   const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth())
+  const [editingExpense, setEditingExpense] = useState<any>(null)
+  const [showSuccessToast, setShowSuccessToast] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
 
   if (loading) {
     return (
@@ -33,14 +38,44 @@ export default function HistoryPage() {
   const formatExpenseDate = (dateString: string) => {
     try {
       const date = new Date(dateString)
-      return date.toLocaleDateString('fr-FR', { 
+      return date.toLocaleDateString('fr-FR', {
         weekday: 'short',
-        day: 'numeric', 
+        day: 'numeric',
         month: 'short',
         year: 'numeric'
       })
     } catch {
       return dateString
+    }
+  }
+
+  const handleEditExpense = (expense: any) => {
+    setEditingExpense(expense)
+  }
+
+  const handleDeleteExpense = async (expenseId: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette dépense ?')) {
+      return
+    }
+
+    try {
+      await deleteExpense(expenseId)
+      setSuccessMessage('Dépense supprimée')
+      setShowSuccessToast(true)
+    } catch (error) {
+      console.error('Error deleting expense:', error)
+    }
+  }
+
+  const handleSaveExpense = async (expenseId: string, updates: any) => {
+    try {
+      await updateExpense(expenseId, updates)
+      setSuccessMessage('Dépense modifiée')
+      setShowSuccessToast(true)
+      setEditingExpense(null)
+    } catch (error) {
+      console.error('Error updating expense:', error)
+      throw error
     }
   }
 
@@ -153,9 +188,31 @@ export default function HistoryPage() {
                     </div>
                   </div>
                   
-                  <div className="text-right">
-                    <div className="font-semibold text-gray-900 dark:text-white">
-                      {formatCurrency(expense.amount)}
+                  <div className="flex items-center space-x-3">
+                    <div className="text-right mr-3">
+                      <div className="font-semibold text-gray-900 dark:text-white">
+                        {formatCurrency(expense.amount)}
+                      </div>
+                    </div>
+
+                    {/* Edit and Delete buttons */}
+                    <div className="flex space-x-1">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleEditExpense(expense)}
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleDeleteExpense(expense.id)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 p-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -164,6 +221,21 @@ export default function HistoryPage() {
           )}
         </Card>
       </div>
+
+      {/* Edit Expense Modal */}
+      <EditExpenseModal
+        isOpen={!!editingExpense}
+        onClose={() => setEditingExpense(null)}
+        expense={editingExpense}
+        onSave={handleSaveExpense}
+      />
+
+      {/* Success Toast */}
+      <SuccessToast
+        isVisible={showSuccessToast}
+        message={successMessage}
+        onClose={() => setShowSuccessToast(false)}
+      />
 
       {/* Bottom Navigation */}
       <BottomNav />

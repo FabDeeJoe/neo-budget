@@ -9,6 +9,8 @@ import { useExpensesContext } from '@/components/providers/expenses-provider'
 import { useFavoriteCategories } from '@/lib/hooks/use-favorites'
 import { validateQuickExpense } from '@/lib/schemas'
 import { formatCurrency } from '@/lib/currency'
+import { getCategoryById } from '@/lib/categories'
+import { createClient } from '@/lib/supabase/client'
 import { X } from 'lucide-react'
 
 interface QuickExpenseModalProps {
@@ -26,6 +28,7 @@ export function QuickExpenseModal({ isOpen, onClose }: QuickExpenseModalProps) {
   
   const { addExpense } = useExpensesContext()
   const { getTopFavorites } = useFavoriteCategories()
+  const supabase = createClient()
   
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -54,29 +57,56 @@ export function QuickExpenseModal({ isOpen, onClose }: QuickExpenseModalProps) {
     setStep('category')
   }
 
-  const handleCategorySelect = async (categoryId: string) => {
+  const handleCategorySelect = async (categoryIdentifier: string) => {
     setLoading(true)
     setError('')
-    
+
     try {
       const numAmount = parseFloat(amount)
-      const selectedCategory = favoriteCategories.find(cat => cat.id === categoryId)
-      
+      let categoryId: string
+      let selectedCategory: any
+
+      // Check if it's already a UUID (favorite categories) or a slug (all categories)
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(categoryIdentifier)
+
+      if (isUUID) {
+        // It's a favorite category with UUID
+        categoryId = categoryIdentifier
+        const favoriteCategory = favoriteCategories.find(cat => cat.id === categoryIdentifier)
+        selectedCategory = favoriteCategory ? getCategoryById(favoriteCategory.slug) : null
+      } else {
+        // It's a category slug, need to get UUID from database
+        const { data: categories } = await supabase
+          .from('categories')
+          .select('id')
+          .eq('slug', categoryIdentifier)
+          .single()
+
+        if (!categories) {
+          setError('Catégorie introuvable')
+          setLoading(false)
+          return
+        }
+
+        categoryId = categories.id
+        selectedCategory = getCategoryById(categoryIdentifier)
+      }
+
       await addExpense({
         amount: numAmount,
         category_id: categoryId,
         date: new Date().toISOString().split('T')[0] // Today's date
       })
-      
+
       // Success - show toast and close modal
       setSelectedCategoryName(selectedCategory?.name || 'Catégorie')
       setShowSuccessToast(true)
-      
+
       setTimeout(() => {
         onClose()
         setLoading(false)
       }, 500)
-      
+
     } catch (err) {
       console.error('Error adding expense:', err)
       setError('Erreur lors de l\'ajout de la dépense')

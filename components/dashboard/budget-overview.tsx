@@ -80,10 +80,24 @@ export function BudgetOverview({ month }: BudgetOverviewProps) {
       budgetAmount: budget.amount,
       spentAmount,
       remainingAmount,
-      percentage: Math.min(100, percentage),
+      percentage: percentage, // Garde le pourcentage réel (peut dépasser 100%)
+      displayPercentage: Math.min(100, percentage), // Pour l'affichage de la barre de progression
       status
     }
-  }).sort((a, b) => b.percentage - a.percentage) // Trier par % utilisé (plus critique en premier)
+  }).sort((a, b) => {
+    // Nouveau tri : budgets avec de l'argent restant en premier, dépassés en dernier
+    const aHasRemaining = a.spentAmount < a.budgetAmount
+    const bHasRemaining = b.spentAmount < b.budgetAmount
+
+    if (aHasRemaining && !bHasRemaining) return -1
+    if (!aHasRemaining && bHasRemaining) return 1
+
+    // Si les deux ont de l'argent restant, trier par pourcentage croissant (moins utilisé en premier)
+    if (aHasRemaining && bHasRemaining) return a.percentage - b.percentage
+
+    // Si les deux sont dépassés, trier par pourcentage croissant aussi (110%, 120%, 150%)
+    return a.percentage - b.percentage
+  })
 
   const totalBudget = categoryStatuses.reduce((sum, cat) => sum + cat.budgetAmount, 0)
   const totalSpent = categoryStatuses.reduce((sum, cat) => sum + cat.spentAmount, 0)
@@ -99,7 +113,9 @@ export function BudgetOverview({ month }: BudgetOverviewProps) {
   }
 
   const getProgressColor = (percentage: number) => {
-    if (percentage >= 90) return 'bg-red-500'
+    if (percentage > 100) return 'bg-gradient-to-r from-red-500 to-pink-600 animate-pulse'
+    if (percentage === 100) return 'bg-red-500'
+    if (percentage >= 90) return 'bg-red-400'
     if (percentage >= 70) return 'bg-orange-500'
     return 'bg-green-500'
   }
@@ -154,7 +170,7 @@ export function BudgetOverview({ month }: BudgetOverviewProps) {
             <span>{formatCurrency(totalSpent)} / {formatCurrency(totalBudget)}</span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-            <div 
+            <div
               className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(overallPercentage)}`}
               style={{ width: `${Math.min(100, overallPercentage)}%` }}
             />
@@ -169,9 +185,18 @@ export function BudgetOverview({ month }: BudgetOverviewProps) {
         </h3>
         
         <div className="space-y-4">
-          {categoryStatuses.map((catStatus, index) => (
-            <div key={catStatus.category?.id || `category-${index}`} className="border-l-4 pl-4" style={{
-              borderColor: catStatus.category?.color || '#10B981'
+          {categoryStatuses.map((catStatus, index) => {
+            const isOverBudget = catStatus.spentAmount > catStatus.budgetAmount
+            const isExactly100 = catStatus.percentage === 100
+            const cardClasses = isOverBudget
+              ? 'border-l-4 pl-4 bg-gradient-to-r from-pink-50 to-red-50 dark:from-pink-900/20 dark:to-red-900/20 rounded-lg p-3 border border-pink-300 dark:border-pink-600 animate-pulse shadow-lg'
+              : isExactly100
+              ? 'border-l-4 pl-4 bg-red-50 dark:bg-red-900/20 rounded-lg p-3 border border-red-300 dark:border-red-600'
+              : 'border-l-4 pl-4'
+
+            return (
+            <div key={catStatus.category?.id || `category-${index}`} className={cardClasses} style={{
+              borderColor: isOverBudget ? '#ec4899' : isExactly100 ? '#dc2626' : (catStatus.category?.color || '#10B981')
             }}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center">
@@ -189,24 +214,53 @@ export function BudgetOverview({ month }: BudgetOverviewProps) {
                 <div className="flex items-center space-x-2">
                   {getStatusIcon(catStatus.status)}
                   <div className="text-right">
-                    <div className="font-medium text-gray-900 dark:text-white">
+                    <div className={`font-medium ${
+                      isOverBudget
+                        ? 'text-pink-800 dark:text-pink-300 font-bold'
+                        : isExactly100
+                        ? 'text-red-800 dark:text-red-300 font-bold'
+                        : 'text-gray-900 dark:text-white'
+                    }`}>
                       {catStatus.percentage.toFixed(0)}%
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      {formatCurrency(catStatus.remainingAmount)} restant
+                    <div className={`text-sm ${
+                      isOverBudget
+                        ? 'text-pink-700 dark:text-pink-400 font-medium'
+                        : isExactly100
+                        ? 'text-red-700 dark:text-red-400 font-medium'
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      {isOverBudget
+                        ? `+${formatCurrency(catStatus.spentAmount - catStatus.budgetAmount)} dépassé`
+                        : isExactly100
+                        ? "Budget épuisé"
+                        : `${formatCurrency(catStatus.remainingAmount)} restant`
+                      }
                     </div>
                   </div>
                 </div>
               </div>
               
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                <div 
+                <div
                   className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(catStatus.percentage)}`}
-                  style={{ width: `${catStatus.percentage}%` }}
+                  style={{ width: `${catStatus.displayPercentage}%` }}
                 />
               </div>
+
+              {/* Message d'alerte pour budget dépassé */}
+              {isOverBudget && (
+                <div className="mt-2">
+                  <div className="bg-gradient-to-r from-pink-100 to-red-100 dark:from-pink-900/40 dark:to-red-900/40 border border-pink-300 dark:border-pink-600 rounded-lg px-3 py-1">
+                    <p className="text-xs text-pink-800 dark:text-pink-300 font-bold text-center">
+                      🚨 BUDGET DÉPASSÉ
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-          ))}
+            )
+          })}
         </div>
       </Card>
     </div>

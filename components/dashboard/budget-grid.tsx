@@ -27,15 +27,25 @@ export function BudgetGrid({ budgets, expenses, categories, currentMonth }: Budg
   const budgetsWithExpenses = budgets.map(budget => {
     const spent = expenseMap[budget.category_id] || 0
     const percentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0
-    
+
     return {
       ...budget,
       spent,
-      percentage
+      percentage // Garde le pourcentage réel (peut dépasser 100%)
     }
   }).sort((a, b) => {
-    // Sort by percentage descending (highest consumption first)
-    return b.percentage - a.percentage
+    // Nouveau tri : budgets avec de l'argent restant en premier, dépassés en dernier
+    const aHasRemaining = a.spent < a.amount
+    const bHasRemaining = b.spent < b.amount
+
+    if (aHasRemaining && !bHasRemaining) return -1
+    if (!aHasRemaining && bHasRemaining) return 1
+
+    // Si les deux ont de l'argent restant, trier par pourcentage croissant (moins utilisé en premier)
+    if (aHasRemaining && bHasRemaining) return a.percentage - b.percentage
+
+    // Si les deux sont dépassés, trier par pourcentage croissant aussi (110%, 120%, 150%)
+    return a.percentage - b.percentage
   })
 
   if (budgetsWithExpenses.length === 0) {
