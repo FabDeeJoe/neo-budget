@@ -136,7 +136,7 @@ export default function NewExpensePage() {
               </Button>
               <div>
                 <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  {step === 'amount' ? 'Montant' : 'Catégorie'}
+                  {step === 'amount' ? 'Nouvelle dépense' : 'Catégorie'}
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   Ajout rapide de dépense
@@ -168,17 +168,7 @@ export default function NewExpensePage() {
         {/* Content Card */}
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           {step === 'amount' && (
-            <div className="space-y-6">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  💰 Nouvelle dépense
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Entrez le montant de votre dépense
-                </p>
-              </div>
-              <AmountInput onSubmit={handleAmountSubmit} />
-            </div>
+            <AmountInput onSubmit={handleAmountSubmit} />
           )}
 
           {step === 'category' && (
