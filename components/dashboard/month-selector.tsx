@@ -47,11 +47,11 @@ export function MonthSelector({ currentMonth, onMonthChange }: MonthSelectorProp
     <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
       <Button
         variant="ghost"
-        size="sm"
+        size="lg"
         onClick={goToPrevious}
-        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+        className="min-h-[48px] min-w-[48px] p-3 hover:bg-gray-100 dark:hover:bg-gray-700 touch-action-manipulation"
       >
-        <ChevronLeft className="h-5 w-5" />
+        <ChevronLeft className="h-6 w-6" />
         <span className="sr-only">Mois précédent</span>
       </Button>
       
@@ -73,11 +73,11 @@ export function MonthSelector({ currentMonth, onMonthChange }: MonthSelectorProp
       
       <Button
         variant="ghost"
-        size="sm"
+        size="lg"
         onClick={goToNext}
-        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+        className="min-h-[48px] min-w-[48px] p-3 hover:bg-gray-100 dark:hover:bg-gray-700 touch-action-manipulation"
       >
-        <ChevronRight className="h-5 w-5" />
+        <ChevronRight className="h-6 w-6" />
         <span className="sr-only">Mois suivant</span>
       </Button>
     </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { AnimatedNumber } from '@/components/ui/animated-number'
 import { formatCurrency } from '@/lib/currency'
 import { getRemainingDaysInMonth } from '@/lib/date'
 import { TrendingUp, TrendingDown, Calendar, Euro } from 'lucide-react'
@@ -30,7 +31,7 @@ export function BudgetSummary({ totalSpent, totalBudget, currentMonth }: BudgetS
   }
 
   return (
-    <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-800 border-green-200 dark:border-gray-700">
+    <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-800 border-green-200 dark:border-gray-700 animate-fadeIn shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
           <Euro className="h-5 w-5 mr-2 text-green-600 dark:text-green-400" />
@@ -64,9 +65,12 @@ export function BudgetSummary({ totalSpent, totalBudget, currentMonth }: BudgetS
               <TrendingUp className="h-4 w-4 mr-1" />
               <span className="text-xs font-medium">Dépensé</span>
             </div>
-            <p className="text-lg font-bold text-gray-900 dark:text-white">
-              {formatCurrency(totalSpent)}
-            </p>
+            <AnimatedNumber
+              value={totalSpent}
+              formatValue={(val) => formatCurrency(val)}
+              className="text-lg font-bold text-gray-900 dark:text-white"
+              duration={1500}
+            />
           </div>
 
           {/* Budget Total */}
@@ -86,9 +90,12 @@ export function BudgetSummary({ totalSpent, totalBudget, currentMonth }: BudgetS
               <TrendingDown className="h-4 w-4 mr-1" />
               <span className="text-xs font-medium">Restant</span>
             </div>
-            <p className={`text-lg font-bold ${getStatusColor()}`}>
-              {formatCurrency(Math.max(remaining, 0))}
-            </p>
+            <AnimatedNumber
+              value={Math.max(remaining, 0)}
+              formatValue={(val) => formatCurrency(val)}
+              className={`text-lg font-bold ${getStatusColor()}`}
+              duration={1200}
+            />
             {remaining < 0 && (
               <p className="text-xs text-red-600 dark:text-red-400">
                 Dépassement de {formatCurrency(Math.abs(remaining))}

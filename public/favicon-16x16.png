@@ -1,0 +1,20 @@
+<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bg16" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#10B981"/>
+        <stop offset="100%" stop-color="#059669"/>
+      </radialGradient>
+    </defs>
+
+    <!-- Background -->
+    <circle cx="8" cy="8" r="7.52" fill="url(#bg16)"/>
+
+    <!-- Euro symbol -->
+    <text x="50%" y="50%" text-anchor="middle" dy="0.35em"
+          fill="white"
+          font-family="Arial, Helvetica, sans-serif"
+          font-size="6.4"
+          font-weight="bold">€</text>
+
+    
+  </svg>

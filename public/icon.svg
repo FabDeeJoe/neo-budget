@@ -1,0 +1,19 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="#10B981" />
+
+  <!-- Euro Symbol -->
+  <path d="M320 180C320 140 290 120 240 120C190 120 160 150 160 180H200C200 170 215 160 240 160C265 160 280 170 280 180C280 190 265 200 240 200H220V240H240C265 240 280 250 280 260C280 270 265 280 240 280C215 280 200 270 200 260H160C160 290 190 320 240 320C290 320 320 300 320 260C320 240 305 225 280 215C305 205 320 190 320 180Z" fill="white"/>
+
+  <!-- Coins/Budget Lines -->
+  <circle cx="350" cy="150" r="25" fill="white" opacity="0.8"/>
+  <circle cx="380" cy="180" r="18" fill="white" opacity="0.6"/>
+
+  <!-- Chart Lines -->
+  <path d="M150 350 L200 320 L250 340 L300 300 L350 330" stroke="white" stroke-width="6" fill="none" opacity="0.7"/>
+
+  <!-- Small budget indicators -->
+  <rect x="120" y="380" width="40" height="8" rx="4" fill="white" opacity="0.6"/>
+  <rect x="120" y="400" width="60" height="8" rx="4" fill="white" opacity="0.4"/>
+  <rect x="120" y="420" width="30" height="8" rx="4" fill="white" opacity="0.5"/>
+</svg>

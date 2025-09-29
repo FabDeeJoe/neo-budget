@@ -12,6 +12,7 @@
     "type-check": "tsc --noEmit",
     "postbuild": "echo 'Build completed successfully'",
     "build:prod": "NODE_ENV=production npm run build",
+    "start:prod": "NODE_ENV=production npm run build && npm run start",
     "deploy": "vercel --prod",
     "env:check": "echo 'SUPABASE_URL:' $NEXT_PUBLIC_SUPABASE_URL && echo 'APP_URL:' $NEXT_PUBLIC_APP_URL",
     "dev:mobile": "cp .env.mobile.local .env.local && next dev --turbopack --hostname 0.0.0.0"
@@ -31,6 +32,7 @@
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.543.0",
     "next": "15.5.2",
+    "next-pwa": "^5.6.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",

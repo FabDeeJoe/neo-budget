@@ -1,0 +1,28 @@
+<svg width="180" height="180" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bg180" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#10B981"/>
+        <stop offset="100%" stop-color="#059669"/>
+      </radialGradient>
+    </defs>
+
+    <!-- Background -->
+    <circle cx="90" cy="90" r="84.6" fill="url(#bg180)"/>
+
+    <!-- Euro symbol -->
+    <text x="50%" y="50%" text-anchor="middle" dy="0.35em"
+          fill="white"
+          font-family="Arial, Helvetica, sans-serif"
+          font-size="72"
+          font-weight="bold">€</text>
+
+    
+    <!-- Small decorative elements -->
+    <circle cx="122.4" cy="52.199999999999996" r="9" fill="rgba(255,255,255,0.8)"/>
+    <circle cx="133.2" cy="62.99999999999999" r="6.300000000000001" fill="rgba(255,255,255,0.6)"/>
+
+    <!-- Chart line -->
+    <path d="M52.199999999999996,122.4 L70.2,112.5 L88.2,118.80000000000001 L106.19999999999999,106.19999999999999 L122.4,115.2"
+          stroke="rgba(255,255,255,0.7)" stroke-width="2.16" fill="none"/>
+    
+  </svg>

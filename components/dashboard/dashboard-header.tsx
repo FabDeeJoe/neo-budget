@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/components/providers/auth-provider'
 import { Button } from '@/components/ui/button'
+import { InstallBadge } from '@/components/pwa/install-prompt'
 import { Wifi, WifiOff, Cloud, CloudOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { User } from '@supabase/supabase-js'
@@ -57,6 +58,9 @@ export function DashboardHeader({ user, isOnline, queueLength }: DashboardHeader
               </div>
             )}
           </div>
+
+          {/* Install badge */}
+          <InstallBadge />
         </div>
 
         {/* Right side - User menu */}

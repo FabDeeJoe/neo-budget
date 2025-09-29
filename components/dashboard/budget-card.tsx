@@ -1,6 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { AnimatedNumber } from '@/components/ui/animated-number'
 import { formatCurrency } from '@/lib/currency'
 import { CATEGORIES } from '@/lib/categories'
 import type { Budget, Category } from '@/lib/database.types'
@@ -92,9 +93,11 @@ export function BudgetCard({ budget, spent, percentage }: BudgetCardProps) {
             <span className="text-xs text-gray-600 dark:text-gray-400">
               Dépensé
             </span>
-            <span className="font-semibold text-gray-900 dark:text-white text-sm">
-              {formatCurrency(spent)}
-            </span>
+            <AnimatedNumber
+              value={spent}
+              formatValue={(val) => formatCurrency(val)}
+              className="font-semibold text-gray-900 dark:text-white text-sm"
+            />
           </div>
           
           <div className="flex justify-between items-center">
@@ -111,13 +114,15 @@ export function BudgetCard({ budget, spent, percentage }: BudgetCardProps) {
             <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
               {isOverBudget ? 'Dépassement' : 'Restant'}
             </span>
-            <span className={`font-bold text-sm ${
-              isOverBudget 
-                ? 'text-red-600 dark:text-red-400'
-                : 'text-green-600 dark:text-green-400'
-            }`}>
-              {isOverBudget ? `+${formatCurrency(spent - budget.amount)}` : formatCurrency(remaining)}
-            </span>
+            <AnimatedNumber
+              value={isOverBudget ? spent - budget.amount : remaining}
+              formatValue={(val) => isOverBudget ? `+${formatCurrency(val)}` : formatCurrency(val)}
+              className={`font-bold text-sm ${
+                isOverBudget
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-green-600 dark:text-green-400'
+              }`}
+            />
           </div>
         </div>
         

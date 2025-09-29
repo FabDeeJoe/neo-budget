@@ -1,14 +1,27 @@
 {
-  "name": "Budget Tracker",
+  "name": "Budget Tracker - Gestion Budget",
   "short_name": "Budget",
-  "description": "Simple and fast expense tracking - Record expenses in < 5 seconds",
+  "description": "Suivi de dépenses rapide et simple - Enregistrez vos dépenses en moins de 5 secondes",
   "theme_color": "#10B981",
   "background_color": "#ffffff",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "scope": "/",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
+  "id": "/",
+  "dir": "ltr",
+  "lang": "fr-FR",
   "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
@@ -20,6 +33,11 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
     }
   ],
   "screenshots": [
@@ -27,9 +45,65 @@
       "src": "/screenshot-mobile.png",
       "sizes": "390x844",
       "type": "image/png",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Dashboard principal avec vue d'ensemble des budgets"
     }
   ],
-  "categories": ["finance", "productivity"],
-  "lang": "fr-FR"
+  "shortcuts": [
+    {
+      "name": "Ajouter une dépense",
+      "short_name": "Dépense",
+      "description": "Ajout rapide d'une dépense",
+      "url": "/expense/new?source=shortcut",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Voir l'historique",
+      "short_name": "Historique",
+      "description": "Consulter l'historique des dépenses",
+      "url": "/history?source=shortcut",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Configurer budgets",
+      "short_name": "Budgets",
+      "description": "Gérer mes budgets mensuels",
+      "url": "/settings/budgets?source=shortcut",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "categories": ["finance", "productivity", "business"],
+  "share_target": {
+    "action": "/expense/new",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "display_override": ["window-controls-overlay", "standalone"],
+  "edge_side_panel": {
+    "preferred_width": 480
+  },
+  "prefer_related_applications": false,
+  "iarc_rating_id": ""
 }

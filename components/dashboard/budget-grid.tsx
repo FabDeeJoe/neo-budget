@@ -53,7 +53,7 @@ export function BudgetGrid({ budgets, expenses, categories, currentMonth }: Budg
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-fadeIn">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Budgets par catégorie
@@ -62,15 +62,23 @@ export function BudgetGrid({ budgets, expenses, categories, currentMonth }: Budg
           {budgetsWithExpenses.length} catégorie{budgetsWithExpenses.length > 1 ? 's' : ''}
         </span>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {budgetsWithExpenses.map((budget) => (
-          <BudgetCard
+        {budgetsWithExpenses.map((budget, index) => (
+          <div
             key={budget.id}
-            budget={budget}
-            spent={budget.spent}
-            percentage={budget.percentage}
-          />
+            className="animate-slideUp"
+            style={{
+              animationDelay: `${index * 100}ms`,
+              animationFillMode: 'both'
+            }}
+          >
+            <BudgetCard
+              budget={budget}
+              spent={budget.spent}
+              percentage={budget.percentage}
+            />
+          </div>
         ))}
       </div>
     </div>

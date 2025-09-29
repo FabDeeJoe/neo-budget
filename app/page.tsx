@@ -8,6 +8,7 @@ import { BudgetOverview } from '@/components/dashboard/budget-overview'
 import { RecentExpenses } from '@/components/dashboard/recent-expenses'
 import { QuickAddFAB } from '@/components/expense/quick-add-fab'
 import { BottomNav } from '@/components/layout/bottom-nav'
+import { PullToRefresh } from '@/components/ui/pull-to-refresh'
 import { useRecurring } from '@/lib/hooks/use-recurring'
 import { useBudgets } from '@/lib/hooks/use-budgets'
 import { Button } from '@/components/ui/button'
@@ -24,14 +25,15 @@ export default function HomePage() {
   const [isOnline, setIsOnline] = useState(true)
   const [queueLength, setQueueLength] = useState(0)
   
-  const { 
-    recurringExpenses, 
-    loading: recurringLoading, 
+  const {
+    recurringExpenses,
+    loading: recurringLoading,
     error: recurringError,
-    getUpcomingRecurring
+    getUpcomingRecurring,
+    refetch: refreshRecurring
   } = useRecurring()
 
-  const { budgets, loading: budgetsLoading } = useBudgets(selectedMonth)
+  const { budgets, loading: budgetsLoading, refetch: refreshBudgets } = useBudgets(selectedMonth)
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -61,9 +63,17 @@ export default function HomePage() {
   const monthlyRecurringTotal = recurringExpenses
     .filter(e => e.is_active)
     .reduce((total, e) => total + e.amount, 0)
-  
+
   const hasAnyBudgets = budgets && budgets.length > 0
-  const hasDatabaseError = (recurringError && recurringError.includes('Base de données non configurée'))
+  const hasDatabaseError = Boolean(recurringError && recurringError.includes('Base de données non configurée'))
+
+  // Refresh function for pull-to-refresh
+  const handleRefresh = async () => {
+    await Promise.all([
+      refreshBudgets?.(),
+      refreshRecurring?.()
+    ])
+  }
 
   if (loading) {
     return (
@@ -81,16 +91,17 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
-      <DashboardHeader 
-        user={user} 
-        isOnline={isOnline} 
-        queueLength={queueLength} 
+      <DashboardHeader
+        user={user}
+        isOnline={isOnline}
+        queueLength={queueLength}
       />
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto p-4 pb-32 space-y-6">
+      {/* Main Content with Pull to Refresh */}
+      <PullToRefresh onRefresh={handleRefresh} disabled={hasDatabaseError}>
+        <div className="max-w-4xl mx-auto p-4 pb-32 space-y-6 animate-fadeIn">
         {/* Month Selector */}
         <MonthSelector
           currentMonth={selectedMonth}
@@ -217,7 +228,8 @@ export default function HomePage() {
             </div>
           </div>
         )}
-      </div>
+        </div>
+      </PullToRefresh>
 
       {/* Floating Action Button */}
       <QuickAddFAB />
